@@ -1,0 +1,10 @@
+fixtures:
+  repositories:
+    stdlib:
+      repo: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
+      ref:  '4.3.0'
+    perlbrew: 'https://github.com/jhoblitt/puppet-perlbrew.git'
+    vcsrepo: 'git://github.com/puppetlabs/puppetlabs-vcsrepo.git'
+    wget: 'https://github.com/maestrodev/puppet-wget.git'
+  symlinks:
+    userportal: "#{source_dir}"

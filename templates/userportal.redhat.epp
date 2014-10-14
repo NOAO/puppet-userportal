@@ -1,0 +1,155 @@
+#!/bin/sh
+#
+# user-portal user-portal SysV init script
+#
+# chkconfig:   2345 99 99
+#
+# description: <description, split multiple lines with \
+#              a backslash>
+
+### BEGIN INIT INFO
+# Provides: 
+# Required-Start: 
+# Required-Stop: 
+# Should-Start: 
+# Should-Stop: 
+# Default-Start: 
+# Default-Stop: 
+# Short-Description: 
+# Description:      
+### END INIT INFO
+
+# adapted from example @
+# https://fedoraproject.org/wiki/Packaging:SysVInitScript
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog='user-portal'
+
+SDM_ENVMODE='<%= scope.lookupvar('userportal::sdm_envmode') %>'
+STARMAN='<%= scope.lookupvar('userportal::starman_bin') %>'
+PORTAL_INSTALL_ROOT='<%= scope.lookupvar('userportal::portal_install_root') %>'
+PORTAL_WORKERS='<%= scope.lookupvar('userportal::portal_workers') %>'
+PORTAL_USER='<%= scope.lookupvar('userportal::portal_user') %>'
+PORTAL_GROUP='<%= scope.lookupvar('userportal::portal_group') %>'
+PORTAL_PORT='<%=  scope.lookupvar('userportal::portal_port') %>'
+PORTAL_LOGDIR="/var/log/userportal"
+PORTAL_APP="${PORTAL_INSTALL_ROOT}/bin/app.pl"
+
+[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
+
+lockfile=/var/lock/subsys/$prog
+pidfile=/var/run/${prog}.pid
+
+# pidfile must be owned by selenium user
+exec="SDM_ENVMODE=${SDM_ENVMODE} \
+    $STARMAN \
+    --daemonize \
+    --preload-app \
+    --workers $PORTAL_WORKERS \
+    --pid $pidfile \
+    --user $PORTAL_USER \
+    --group $PORTAL_GROUP \
+    --port $PORTAL_PORT \
+    --error-log ${PORTAL_LOGDIR}/error.log \
+    --access-log ${PORTAL_LOGDIR}/access.log \
+    --path $PORTAL_INSTALL_ROOT \
+    --app $PORTAL_APP"
+
+cd $PORTAL_INSTALL_ROOT
+
+start() {
+    mkdir -p $PORTAL_LOGDIR
+    chown $PORTAL_USER:$PORTAL_GROUP $PORTAL_LOGDIR
+
+    # XXX Net::Server::Daemonize will die if the pidfile exists but doesn't
+    # contain a pid string.  This is absurd as it means the process creating
+    # the pidfile would need to have write permissions to /var/run/ and is
+    # imcompatbile with EL5/6 sysv helper machinery.
+    # As a kludge, we are creating the file and loading it with a dummy PID
+
+    # If the pidfile exists and isn't zero, leave it alone. Otherwise, load it
+    # with a bogus pid that can not collid with a real pid.
+    if [ ! -s $pidfile ]; then
+        maxpid=`cat /proc/sys/kernel/pid_max`
+        maxpid=$((maxpid + 42))
+        echo $maxpid > $pidfile
+    fi
+
+    # pidfile must be owned by portal user
+    chown $PORTAL_USER:$PORTAL_GROUP $pidfile
+
+    echo -n $"Starting $prog: "
+    # if not running, start it up here, usually something like "daemon $exec"
+    daemon --pidfile=${pidfile} --user=${PORTAL_USER} ${exec}
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    # stop it here, often "killproc $prog"
+    killproc -p $pidfile $prog
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    restart
+}
+
+force_reload() {
+    restart
+}
+
+rh_status() {
+    # run checks to determine if the service is running or use generic status
+    status $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 2
+esac
+exit $?

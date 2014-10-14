@@ -1,0 +1,17 @@
+{
+  "name": "puppet-userportal",
+  "version": "0.1.0",
+  "author": "Joshua Hoblitt <jhoblitt@cpan.org>",
+  "summary": "module to deploy NOAO user-portal",
+  "license": "Apache 2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null,
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.3.0"}
+    {"name":"jhoblitt-perlbrew","version_requirement":">= 0.3.0"}
+    {"name":"puppetlabs-vcsrepo","version_requirement":">= 1.1.0"}
+    {"name":"maestrodev-wget","version_requirement":">= 1.5.6"}
+  ]
+}
+
