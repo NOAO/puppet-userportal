@@ -17,8 +17,8 @@ best, as a reference without access to SDM's private git repositories.
 
 ```puppet
 class { 'userportal':
-  perlmods_git => '',
-  portal_git   => '', # required even though not used
+  perlmods_git => 'git@example.org:foo/perlmods.git',
+  portal_git   => 'foo', # required even though not used
   perlenv_only => true,
 }
 ```
