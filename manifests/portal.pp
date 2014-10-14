@@ -41,7 +41,7 @@ class userportal::portal {
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
-    content => template("${module_name}/userportal.redhat.epp"),
+    content => template("${module_name}/userportal.redhat.erb"),
   }
 
   service { 'userportal':
