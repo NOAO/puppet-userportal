@@ -25,7 +25,7 @@
 # Source function library.
 . /etc/rc.d/init.d/functions
 
-prog='user-portal'
+prog='userportal'
 
 SDM_ENVMODE='<%= scope.lookupvar('userportal::sdm_envmode') %>'
 STARMAN='<%= scope.lookupvar('userportal::starman_bin') %>'
@@ -37,31 +37,28 @@ PORTAL_PORT='<%=  scope.lookupvar('userportal::portal_port') %>'
 PORTAL_LOGDIR="/var/log/userportal"
 PORTAL_APP="${PORTAL_INSTALL_ROOT}/bin/app.pl"
 
-[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
+[ -e /etc/sysconfig/${prog} ] && . /etc/sysconfig/${prog}
 
-lockfile=/var/lock/subsys/$prog
+lockfile=/var/lock/subsys/${prog}
 pidfile=/var/run/${prog}.pid
 
 # pidfile must be owned by selenium user
 exec="SDM_ENVMODE=${SDM_ENVMODE} \
-    $STARMAN \
+    ${STARMAN} \
     --daemonize \
     --preload-app \
-    --workers $PORTAL_WORKERS \
-    --pid $pidfile \
-    --user $PORTAL_USER \
-    --group $PORTAL_GROUP \
-    --port $PORTAL_PORT \
+    --workers ${PORTAL_WORKERS} \
+    --pid ${pidfile} \
+    --user ${PORTAL_USER} \
+    --group ${PORTAL_GROUP} \
+    --port ${PORTAL_PORT} \
     --error-log ${PORTAL_LOGDIR}/error.log \
     --access-log ${PORTAL_LOGDIR}/access.log \
-    --path $PORTAL_INSTALL_ROOT \
-    --app $PORTAL_APP"
-
-cd $PORTAL_INSTALL_ROOT
+    --app ${PORTAL_APP}"
 
 start() {
     mkdir -p $PORTAL_LOGDIR
-    chown $PORTAL_USER:$PORTAL_GROUP $PORTAL_LOGDIR
+    chown ${PORTAL_USER}:${PORTAL_GROUP} $PORTAL_LOGDIR
 
     # XXX Net::Server::Daemonize will die if the pidfile exists but doesn't
     # contain a pid string.  This is absurd as it means the process creating
