@@ -89,6 +89,7 @@ describe 'userportal' do
         :group  => 'portal'
       )
     end
+    it { should contain_file('/home/portal/userportal/lock').that_notifies('Service[userportal]') }
 
     it do
       should contain_file('/etc/init.d/userportal').with(
@@ -110,6 +111,7 @@ describe 'userportal' do
     ].each { |line|
       it { should contain_file('/etc/init.d/userportal').with_content(/#{line}/) }
     }
+    it { should contain_file('/etc/init.d/userportal').that_notifies('Service[userportal]') }
 
     it do
       should contain_service('userportal').with(

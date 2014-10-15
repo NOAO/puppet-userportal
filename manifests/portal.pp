@@ -34,6 +34,7 @@ class userportal::portal {
     ensure => 'file',
     owner  => $::userportal::portal_user,
     group  => $::userportal::portal_group,
+    notify => Service['userportal'],
   }
 
   file { '/etc/init.d/userportal':
@@ -42,6 +43,7 @@ class userportal::portal {
     group   => 'root',
     mode    => '0755',
     content => template("${module_name}/userportal.redhat.erb"),
+    notify  => Service['userportal'],
   }
 
   service { 'userportal':
