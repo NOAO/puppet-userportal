@@ -120,6 +120,8 @@ describe 'userportal' do
       )
     end
     it { should contain_service('userportal').that_requires('Perlbrew::Exec[cpanm --installdeps --notest .]') }
+    it { should contain_service('userportal').that_requires('File[/etc/init.d/userportal]') }
+
   end # portal
 
   context 'with defaults for all parameters' do

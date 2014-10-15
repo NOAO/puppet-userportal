@@ -49,6 +49,6 @@ class userportal::portal {
     hasstatus  => true,
     hasrestart => true,
     enable     => $::userportal::service_enable,
-    require    => Perlbrew::Exec['cpanm --installdeps --notest .'],
+    require    => [Perlbrew::Exec['cpanm --installdeps --notest .'], File['/etc/init.d/userportal']],
   }
 }
