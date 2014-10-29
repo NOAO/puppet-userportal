@@ -24,4 +24,10 @@ class userportal::perlenv {
     timeout    => 1800,
     require    => [Package['expat-devel'], Package['postgresql-devel']],
   }
+
+  # at least some of the nsa "dbuserapps" require LWP::Protocol::https
+  perlbrew::cpanm { 'LWP::Protocol::https':
+    target  => $::userportal::perl_version,
+    timeout => 900,
+  }
 }

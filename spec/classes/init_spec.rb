@@ -36,6 +36,13 @@ describe 'userportal' do
     end
     it { should contain_perlbrew__cpanm('git@example.org:foo/perlmods.git').that_requires('Package[postgresql-devel]') }
     it { should contain_perlbrew__cpanm('git@example.org:foo/perlmods.git').that_requires('Package[expat-devel]') }
+
+    it do
+      should contain_perlbrew__cpanm('LWP::Protocol::https').with(
+        :target  => 'perl-5.20.1',
+        :timeout => 900,
+      )
+    end
   end # perlenv
 
   shared_examples_for 'portal' do
