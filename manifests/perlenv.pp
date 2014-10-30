@@ -1,7 +1,7 @@
 # == Class: userportal::perlenv
 #
 class userportal::perlenv {
-  ensure_packages(['postgresql-devel', 'expat-devel'])
+  ensure_packages(['postgresql-devel', 'expat-devel', 'openssl-devel'])
 
   perlbrew { $::userportal::portal_home:
     install_root => $::userportal::portal_home,
@@ -29,5 +29,6 @@ class userportal::perlenv {
   perlbrew::cpanm { 'LWP::Protocol::https':
     target  => $::userportal::perl_version,
     timeout => 900,
+    require => Package['openssl-devel'],
   }
 }

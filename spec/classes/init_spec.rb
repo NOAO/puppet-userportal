@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'userportal' do
   shared_examples_for 'perlenv' do
-    ['postgresql-devel', 'expat-devel'].each { |pkg|
+    ['postgresql-devel', 'expat-devel', 'openssl-devel'].each { |pkg|
       it { should contain_package(pkg) }
     }
 
@@ -43,6 +43,7 @@ describe 'userportal' do
         :timeout => 900,
       )
     end
+    it { should contain_perlbrew__cpanm('LWP::Protocol::https').that_requires('Package[openssl-devel]') }
   end # perlenv
 
   shared_examples_for 'portal' do
