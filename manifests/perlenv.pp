@@ -1,7 +1,10 @@
 # == Class: userportal::perlenv
 #
 class userportal::perlenv {
-  ensure_packages(['postgresql-devel', 'expat-devel', 'openssl-devel'])
+
+  $packages = ['postgresql-devel', 'expat-devel', 'openssl-devel']
+
+  ensure_resource('package', $packages, {'ensure' => 'present'})
 
   perlbrew { $::userportal::portal_home:
     install_root => $::userportal::portal_home,
